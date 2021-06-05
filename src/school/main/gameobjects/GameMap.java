@@ -6,49 +6,48 @@ import school.main.GameObject;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * This is the root object for most other in game objects, this creates the appearance of a moving "camera"
+ */
 public class GameMap extends GameObject {
 
-    final Game game;
+    public final Game game;
     final JFrame frame;
 
-    private int focusObjectPadding = 30;
-    private GameObject focusObject = null;
+    // mapSpeed is the speed with which the map scrolls.
+    public double mapSpeed = 20;
 
     public GameMap(JFrame frame, Game mainGame) {
         super("Map", null);
         this.frame = frame;
         this.game = mainGame;
-        Tank tonk = new Tank("Player 1", 100, 150, this);
-        this.focusObject = tonk;
-        this.addChildObject(tonk);
-
+        double middle = frame.getWidth() / 2;
+        Tank tonkA = new ShooterTank("Player 1 - Shooter", (int) (middle - middle / 2), 150, this);
+        Tank tonkB = new DropperTank("Player 2 - Dropper", (int) (middle + middle / 2), 150, this);
+        this.addChildObject(tonkA);
+        this.addChildObject(tonkB);
     }
-
 
     @Override
     public void onDraw(Graphics graphics, double deltaMs) {
         graphics.setColor(Color.black);
-        graphics.drawLine(0,0, 1000, 0);
-        graphics.drawLine(0,0, 0, 100);
-        if (focusObject != null) {
-            if (focusObject.getGlobalX() < focusObjectPadding) {
-                this.setX((int) (getX() + deltaMs));
-            }
-            if (focusObject.getGlobalX() + focusObject.getWidth() > game.getWidth() - focusObjectPadding) {
-                this.setX((int) (getX() - deltaMs));
-            }
-            if (focusObject.getGlobalY() < focusObjectPadding) {
-                this.setY((int) (getY() + deltaMs));
-            }
-            if (focusObject.getGlobalY() + focusObject.getHeight() > game.getHeight() - focusObjectPadding) {
-                this.setY((int) (getY() - deltaMs));
-            }
-        }
+        graphics.drawLine(0, 0, 1000, 0);
+        graphics.drawLine(0, 0, 0, 100);
+        this.setX(getX() - (deltaMs / 1000d) * mapSpeed);
     }
+
+//    @Override
+//    public GameMap r() {
+//        return this;
+//    }
 
     @Override
     public GameMap getGameMap() {
         return this;
+    }
+
+    public Game getGame() {
+        return this.game;
     }
 
     @Override
